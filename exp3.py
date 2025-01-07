@@ -53,7 +53,7 @@ def show_status(file_path):
     print(f"Длительность: {length:.2f} секунд")
     print(f"Воспроизведено: {current_pos:.2f} секунд")
     print(f"Громкость: {volume:.2f}")
-    print("ocmалось", length - current_pos, "секунд")
+    print("ocmалось")
 
 def music_control():
     file_path = ""
