@@ -1,12 +1,28 @@
+
+
+# ---------------IMPORTS------------------------- #
 import time
 from colorama import Fore
 import os
 from os import system
 import msvcrt
 
-
-
+#---------------IMPORTS-end-------------------------- #
+# ---------------FUNCTIONS------------------------- #
 def get_input():
+    pressed = ''
+    while True:
+        if msvcrt.kbhit():  
+            key = msvcrt.getch().decode('utf-8')
+
+            if key in ['1', '2', '3', '4']:
+                if pressed == '':
+                    pressed = key 
+                    return key
+            elif key == '\r':  
+                continue
+
+def get_letter_input():
     pressed = ''
     while True:
         if msvcrt.kbhit():  
@@ -21,8 +37,20 @@ def get_input():
 
 
 
+# ---------------FUNCTIONS-ends------------------------- #
+#----------------Modes------------------------- #
+def choosen_music():
+    os.system("cls")
+
+
+
+
+    
+    
+    
 
 def vibeflow_folder():
+    time.sleep(1)
     os.system("cls") 
     path = "music"
     music_extensions = {".mp3", ".wav", ".flac", ".aac", ".ogg", ".m4a"}
@@ -91,8 +119,7 @@ def main_menu():
     
     
     
-    
-    
+#----------------Modes-end------------------------- #
     
 def main():
     os.system("cls")
