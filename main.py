@@ -22,7 +22,7 @@ def get_input():
         if msvcrt.kbhit():  
             key = msvcrt.getch().decode('utf-8')
 
-            if key in ['1', '2', '3', '4']:
+            if key in ['1', '2', '3', '4', '5']:
                 if pressed == '':
                     pressed = key 
                     return key
@@ -100,8 +100,53 @@ def show_status(file_path):
         time.sleep(1)
         main_menu()
 
-    
-    
+ 
+def show_status2(file_path):
+    # Получаем информацию о музыке
+    length = int(get_audio_length(file_path))  # Длительность музыки в секундах
+    current_pos = int(pygame.mixer.music.get_pos() / 1000)  # Текущее положение в секундах
+    volume = pygame.mixer.music.get_volume()  # Текущая громкость (0.0 до 1.0)
+    music_name = os.path.basename(file_path)  # Получаем имя файла музыки
+
+    print(f"Music path: {file_path}")
+    print(f"Music Name: {music_name}")
+    print(f"Length: {length:.2f} sec")  
+    print(f"Played: {current_pos:.2f} sec")
+    print("Not played: ", length - current_pos)
+    if current_pos == length:
+        print("Music has ended")
+        time.sleep(1)
+        vibeflow_folder() 
+          
+def choose_music(files, index):
+    try:
+        # Получаем текущую директорию
+        current_directory = os.getcwd()
+        # Формируем путь к файлу
+        music_directory = os.path.join(current_directory, "music")
+        file_to_play = os.path.join(music_directory, files[index - 1])
+        
+        # Проверяем, существует ли файл
+        if not os.path.exists(file_to_play):
+            print(f"Error: File not found at {file_to_play}")
+            return
+
+        # Проигрываем файл
+        play_music(file_to_play)
+        print(f"Playing started: {file_to_play}")
+        time.sleep(1)
+        
+        # Имитация процесса воспроизведения
+        playing = True
+        while playing:
+            show_status2(file_to_play)
+            time.sleep(1)
+            os.system("cls")  # Очистка экрана
+    except IndexError:
+        print("Invalid index. Please try again.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+  
     
 # ---------------FUNCTIONS-ends------------------------- #
 #----------------Modes------------------------- #
@@ -129,10 +174,47 @@ def choosen_music():
 
 
         
-    
+def guide_mode():
+    time.sleep(1)
+    system("cls")
+    print(Fore.YELLOW + "Welcome to the guide mode" + Fore.RESET)
+    print(Fore.MAGENTA+"""⣿⣿⣿⠟⠛⠛⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⢋⣩⣉⢻
+⣿⣿⣿⠀⣿⣶⣕⣈⠹⠿⠿⠿⠿⠟⠛⣛⢋⣰⠣⣿⣿⠀⣿
+⣿⣿⣿⡀⣿⣿⣿⣧⢻⣿⣶⣷⣿⣿⣿⣿⣿⣿⠿⠶⡝⠀⣿
+⣿⣿⣿⣷⠘⣿⣿⣿⢏⣿⣿⣋⣀⣈⣻⣿⣿⣷⣤⣤⣿⡐⢿
+⣿⣿⣿⣿⣆⢩⣝⣫⣾⣿⣿⣿⣿⡟⠿⠿⠦⠀⠸⠿⣻⣿⡄⢻
+⣿⣿⣿⣿⣿⡄⢻⣿⣿⣿⣿⣿⣿⣿⣿⣶⣶⣾⣿⣿⣿⣿⠇⣼
+⣿⣿⣿⣿⣿⣿⡄⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⣰
+⣿⣿⣿⣿⣿⣿⠇⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢀⣿
+⣿⣿⣿⣿⣿⠏⢰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢸⣿
+⣿⣿⣿⣿⠟⣰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⣿
+⣿⣿⣿⠋⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡄⣿
+⣿⣿⠋⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⢸"""+Fore.RESET)
+    print(Fore.YELLOW + "Here you can learn how to use the player" + Fore.RESET)
+    time.sleep(2)
+    system("cls")
+    print(Fore.YELLOW + "How to  choose?" + Fore.RESET)
+    time.sleep(3)
+    print(Fore.YELLOW + "To choose options or files you need enter that sysbols near them for example:" + Fore.RESET)
+    print(Fore.YELLOW + "345.My old piano album.mp3  <--- you need write 345 to play it on player" + Fore.RESET)
+    time.sleep(3)
+    print(Fore.YELLOW + "s.Choose music to play <--- you need write s to choose music to play" + Fore.RESET)
+    print(Fore.RED +"You will returned to main menu in 5 seconds"+Fore.RESET)
+    time.sleep(3)
+    print(Fore.RED + "5..."+Fore.RESET)
+    time.sleep(1)
+    print(Fore.RED + "4..."+Fore.RESET)
+    time.sleep(1)
+    print(Fore.RED + "3..."+Fore.RESET)
+    time.sleep(1)
+    print(Fore.RED + "2..."+Fore.RESET)
+    time.sleep(1)
+    print(Fore.RED + "1..."+Fore.RESET)
+    time.sleep(1)
+    main_menu()
+
         
     
-
 
 
 
@@ -149,7 +231,8 @@ def vibeflow_folder():
     if not os.path.exists(path):
         os.makedirs(path)
         print(f"Folder '{path}' was created, because it didn't exist.")
-        return  
+        time.sleep(1)
+        main_menu()
 
     only_music = True
     files_in_folder = os.listdir(path) 
@@ -166,9 +249,17 @@ def vibeflow_folder():
                     break
 
     if only_music and files_in_folder: 
-        print("Music is running")
+        print(f"Folder '{path}' contains only music files:")
+        for index, file in enumerate(files_in_folder, start=1):
+             print(f"{index}. {file}")
+             choice = int(input("Choose music to play (by index,write 0 to return): "))
+             if choice == 0:
+                    main_menu()
+             else:
+                choose_music(files_in_folder, choice)            
+             
     else:
-        print(f"There are no music files in the folder '{path}'")
+        print(f"There are not only music files in the folder or they dont exist'{path}'")
         print(Fore.MAGENTA + "`✦ 1.Return to the main menu?"+Fore.RESET, Fore.RED + "exit any other key to stop program`✦"+Fore.RESET)
         choice = get_input()
         if choice == '1':   
@@ -178,7 +269,9 @@ def vibeflow_folder():
 def main_menu():
     system("cls")
     Vibeflow = Fore.MAGENTA + "VibeFlow" + Fore.RESET
+    guide = Fore.YELLOW + "Guide" + Fore.RESET
     print(f"             Welcome to {Vibeflow} - A tiny music player")
+    print(Fore.GREEN+f"                           Main Menu                     "+Fore.RESET)
     print(Fore.GREEN + "----------------------------------------------------------------"+Fore.RESET)
     print("1.                Play Choosen Music             ")
     print("2.                Open Vibeflow music folder")
@@ -187,6 +280,7 @@ def main_menu():
     print(Fore.GREEN + "----------------------------------------------------------------"+Fore.RESET)
     print(Fore.GREEN + "----------------------------------------------------------------"+Fore.RESET)
     print(Fore.GREEN + "  `✦ ˑ ִֶ 𓂃⊹ --------credits by Kiralaine-----------------`✦ ˑ ִֶ 𓂃⊹    "+Fore.RESET)
+    print(f"              ------Touch 5 to open {guide}------   ")
     choice = get_input() 
     if choice == '1':
         system("cls")
@@ -199,11 +293,18 @@ def main_menu():
         vibeflow_folder()
     elif choice == '3':
         system("cls")
-        print("You choosed  'Download Music from Vibeflow-server'")
+        print("Coming soon")
+        time.sleep(1)
+        main_menu()
     elif choice == '4':
         system("cls")
         print("You choosed  'Exit'")
         exit()
+        
+    elif choice == '5':
+        system("cls")
+        print("You choosed  'Guide'")
+        guide_mode()
 
 
     
