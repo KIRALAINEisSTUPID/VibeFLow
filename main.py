@@ -84,11 +84,10 @@ def play_music(file_path):
     
 
 def show_status(file_path):
-    # Получаем информацию о музыке
-    length = int(get_audio_length(file_path))  # Длительность музыки в секундах
-    current_pos = int(pygame.mixer.music.get_pos() / 1000)  # Текущее положение в секундах
-    volume = pygame.mixer.music.get_volume()  # Текущая громкость (0.0 до 1.0)
-    music_name = os.path.basename(file_path)  # Получаем имя файла музыки
+    length = int(get_audio_length(file_path)) 
+    current_pos = int(pygame.mixer.music.get_pos() / 1000)  
+    volume = pygame.mixer.music.get_volume() 
+    music_name = os.path.basename(file_path)
 
     print(f"Music path: {file_path}")
     print(f"Music Name: {music_name}")
