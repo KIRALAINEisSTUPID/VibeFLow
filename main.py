@@ -7,11 +7,13 @@ import os
 from os import system
 import msvcrt
 import pygame
+
 from pygame import mixer
 from mutagen.mp3 import MP3  # Для работы с MP3
 from mutagen.wavpack import WavPack
 import tkinter as tk
 from tkinter import filedialog
+pygame.init()
 #---------------IMPORTS-end-------------------------- #
 # ---------------FUNCTIONS------------------------- #
 def get_input():
@@ -27,18 +29,7 @@ def get_input():
             elif key == '\r':  
                 continue
 
-def get_letter_input():
-    pressed = ''
-    while True:
-        if msvcrt.kbhit():  
-            key = msvcrt.getch().decode('utf-8')
 
-            if key in ['v', 's', 'p', 'u']:
-                if pressed == '':
-                    pressed = key 
-                    return key
-            elif key == '\r':  
-                continue
             
             
 def get_only_1_letter_input():
@@ -89,31 +80,27 @@ def play_music(file_path):
     pygame.mixer.music.play()      
     
     
-    
-def pause_music():
-    pygame.mixer.music.pause()  
-    
-def unpause_music():
-    pygame.mixer.music.unpause()  # Возобновляем воспроизведение
-
 
     
-def volume_controling(volume):
-    pygame.mixer.music.set_volume(volume)  # Устанавливаем громкость (от 0 до 1)
 
-    
-    
-    
 def show_status(file_path):
     # Получаем информацию о музыке
     length = int(get_audio_length(file_path))  # Длительность музыки в секундах
     current_pos = int(pygame.mixer.music.get_pos() / 1000)  # Текущее положение в секундах
     volume = pygame.mixer.music.get_volume()  # Текущая громкость (0.0 до 1.0)
+    music_name = os.path.basename(file_path)  # Получаем имя файла музыки
 
-    print(f"Length: {length:.2f} секунд")
-    print(f"Played: {current_pos:.2f} секунд")
-    print(f"VOlume: {volume:.2f}")
+    print(f"Music path: {file_path}")
+    print(f"Music Name: {music_name}")
+    print(f"Length: {length:.2f} sec")  
+    print(f"Played: {current_pos:.2f} sec")
     print("Not played: ", length - current_pos)
+    if current_pos == length:
+        print("Music has ended")
+        time.sleep(1)
+        main_menu()
+
+    
     
     
 # ---------------FUNCTIONS-ends------------------------- #
@@ -122,18 +109,25 @@ def choosen_music():
     time.sleep(1)
     os.system("cls")
     file_path = ""
-    print("Which music file do you want to play?")
+    print("S.Choose music to play:")
     first_time = get_only_1_letter_input()
     if first_time == 's':
         file_path=select_file()
         if file_path:
+            print(f"Playing started {file_path} .")
+            time.sleep(1)
             play_music(file_path)
-            print(f"Воспроизведение {file_path} началось.")
-            while True:
+            
+            playing = True
+            while playing:
                 show_status(file_path)
                 time.sleep(1)
                 os.system("cls")
-    
+                
+
+
+
+
         
     
         
@@ -192,7 +186,7 @@ def main_menu():
     print("4.                Exit")
     print(Fore.GREEN + "----------------------------------------------------------------"+Fore.RESET)
     print(Fore.GREEN + "----------------------------------------------------------------"+Fore.RESET)
-    print(Fore.GREEN + "  `✦ ˑ ִֶ 𓂃⊹ ----------------------------------`✦ ˑ ִֶ 𓂃⊹    "+Fore.RESET)
+    print(Fore.GREEN + "  `✦ ˑ ִֶ 𓂃⊹ --------credits by Kiralaine-----------------`✦ ˑ ִֶ 𓂃⊹    "+Fore.RESET)
     choice = get_input() 
     if choice == '1':
         system("cls")
