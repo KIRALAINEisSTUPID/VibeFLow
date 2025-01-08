@@ -7,11 +7,14 @@ import os
 from os import system
 import msvcrt
 import pygame
+import requests
+import json
 
 from pygame import mixer
 from mutagen.mp3 import MP3  # Для работы с MP3
 from mutagen.wavpack import WavPack
 import tkinter as tk
+import re
 from tkinter import filedialog
 pygame.init()
 #---------------IMPORTS-end-------------------------- #
@@ -30,7 +33,8 @@ def get_input():
                 continue
 
 
-            
+def sanitize_filename(filename):
+    return re.sub(r'[\\/*?:"<>|]', '', filename)           
             
 def get_only_1_letter_input():
     pressed = ''
@@ -45,7 +49,17 @@ def get_only_1_letter_input():
             elif key == '\r':  
                 continue
 
-
+def load_api_key(config_file):
+    try:
+        with open(config_file, "r") as file:
+            config = json.load(file)
+            return config.get("api_key")
+    except FileNotFoundError:
+        print(f"Error: Configuration file '{config_file}' not found.")
+        return None
+    except json.JSONDecodeError:
+        print(f"Error: Invalid JSON format in '{config_file}'.")
+        return None
 
 def get_audio_length(file_path):
     try:
@@ -84,11 +98,10 @@ def play_music(file_path):
     
 
 def show_status(file_path):
-    # Получаем информацию о музыке
-    length = int(get_audio_length(file_path))  # Длительность музыки в секундах
-    current_pos = int(pygame.mixer.music.get_pos() / 1000)  # Текущее положение в секундах
-    volume = pygame.mixer.music.get_volume()  # Текущая громкость (0.0 до 1.0)
-    music_name = os.path.basename(file_path)  # Получаем имя файла музыки
+    length = int(get_audio_length(file_path)) 
+    current_pos = int(pygame.mixer.music.get_pos() / 1000)  
+    volume = pygame.mixer.music.get_volume() 
+    music_name = os.path.basename(file_path)
 
     print(f"Music path: {file_path}")
     print(f"Music Name: {music_name}")
@@ -102,11 +115,10 @@ def show_status(file_path):
 
  
 def show_status2(file_path):
-    # Получаем информацию о музыке
-    length = int(get_audio_length(file_path))  # Длительность музыки в секундах
-    current_pos = int(pygame.mixer.music.get_pos() / 1000)  # Текущее положение в секундах
-    volume = pygame.mixer.music.get_volume()  # Текущая громкость (0.0 до 1.0)
-    music_name = os.path.basename(file_path)  # Получаем имя файла музыки
+    length = int(get_audio_length(file_path)) 
+    current_pos = int(pygame.mixer.music.get_pos() / 1000)  
+    volume = pygame.mixer.music.get_volume()  
+    music_name = os.path.basename(file_path)  
 
     print(f"Music path: {file_path}")
     print(f"Music Name: {music_name}")
@@ -120,28 +132,23 @@ def show_status2(file_path):
           
 def choose_music(files, index):
     try:
-        # Получаем текущую директорию
         current_directory = os.getcwd()
-        # Формируем путь к файлу
         music_directory = os.path.join(current_directory, "music")
         file_to_play = os.path.join(music_directory, files[index - 1])
         
-        # Проверяем, существует ли файл
         if not os.path.exists(file_to_play):
             print(f"Error: File not found at {file_to_play}")
             return
 
-        # Проигрываем файл
         play_music(file_to_play)
         print(f"Playing started: {file_to_play}")
         time.sleep(1)
         
-        # Имитация процесса воспроизведения
         playing = True
         while playing:
             show_status2(file_to_play)
             time.sleep(1)
-            os.system("cls")  # Очистка экрана
+            os.system("cls") 
     except IndexError:
         print("Invalid index. Please try again.")
     except Exception as e:
@@ -215,6 +222,94 @@ def guide_mode():
 
         
     
+
+
+
+def download_with_youtube():
+    time.sleep(1)
+    os.system("cls" if os.name == "nt" else "clear")
+    
+    # Загружаем API-ключ из config.json
+    config_file = "config.json"
+    api = load_api_key(config_file)
+    if not api:
+        print("API key not found. Please check your configuration file.")
+        return
+    
+    video_id = input("Enter the video ID from Youtube: ")
+    
+    # Определяем фиксированную папку для сохранения
+    save_path = os.path.join(os.getcwd(), "music")
+    
+    # Проверяем и создаём папку, если её нет
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)  # Создаёт папку, если её нет
+    
+    try:
+        url = "https://youtube-mp36.p.rapidapi.com/dl"
+        querystring = {"id": video_id}
+        
+        headers = {
+            "x-rapidapi-key": api,
+            "x-rapidapi-host": "youtube-mp36.p.rapidapi.com"
+        }
+        
+        while True:
+            response = requests.get(url, headers=headers, params=querystring)
+            response.raise_for_status()
+            answer = response.json()
+            
+            print("API Response:", answer)  # Для отладки
+            
+            if answer.get("status") == "ok" and "link" in answer:
+                # Очистка имени файла
+                raw_title = answer["title"]
+                sanitized_title = sanitize_filename(f"{raw_title} [{video_id}].mp3")
+                
+                download_url = answer["link"]
+                
+                # Формирование полного пути файла
+                full_file_path = os.path.join(save_path, sanitized_title)
+                
+                # Загрузка аудиофайла
+                audio_response = requests.get(download_url)
+                with open(full_file_path, "wb") as file:
+                    file.write(audio_response.content)
+                
+                print(f"Downloaded successfully as '{full_file_path}'")
+                break
+            elif answer.get("status") == "processing":
+                print("File is being processed. Retrying in 5 seconds...")
+                time.sleep(5)  # Ожидание перед повторной проверкой
+            else:
+                print(f"Failed to process the request. Status: {answer.get('status')}")
+                break
+    
+    except requests.exceptions.RequestException as e:
+        print(f"An error occurred during the request: {e}")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
