@@ -105,8 +105,8 @@ def show_status(file_path):
 
     print(f"Music path: {file_path}")
     print(f"Music Name: {music_name}")
-    print(f"Length: {length:.2f} sec")  
-    print(f"Played: {current_pos:.2f} sec")
+    print(f"Length: {length} sec")  
+    print(f"Played: {current_pos} sec")
     print("Not played: ", length - current_pos)
     if current_pos == length:
         print("Music has ended")
@@ -122,8 +122,8 @@ def show_status2(file_path):
 
     print(f"Music path: {file_path}")
     print(f"Music Name: {music_name}")
-    print(f"Length: {length:.2f} sec")  
-    print(f"Played: {current_pos:.2f} sec")
+    print(f"Length: {length:} sec")  
+    print(f"Played: {current_pos} sec")
     print("Not played: ", length - current_pos)
     if current_pos == length:
         print("Music has ended")
@@ -277,18 +277,23 @@ def download_with_youtube():
                     file.write(audio_response.content)
                 
                 print(f"Downloaded successfully as '{full_file_path}'")
-                break
+                time.sleep(1)
+                main_menu()
             elif answer.get("status") == "processing":
                 print("File is being processed. Retrying in 5 seconds...")
                 time.sleep(5)  # Ожидание перед повторной проверкой
             else:
                 print(f"Failed to process the request. Status: {answer.get('status')}")
-                break
+                time.sleep(5)
+                main_menu()
     
     except requests.exceptions.RequestException as e:
         print(f"An error occurred during the request: {e}")
+        time.sleep(5)
+        main_menu()
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
+        time.sleep(5)
 
 
 
@@ -330,7 +335,7 @@ def vibeflow_folder():
         main_menu()
 
     only_music = True
-    files_in_folder = os.listdir(path) 
+    files_in_folder = [file for file in os.listdir(path) if os.path.isfile(os.path.join(path, file))]
 
     if not files_in_folder:  
         only_music = False
@@ -345,13 +350,13 @@ def vibeflow_folder():
 
     if only_music and files_in_folder: 
         print(f"Folder '{path}' contains only music files:")
-        for index, file in enumerate(files_in_folder, start=1):
+        for index, file in enumerate(files_in_folder,start=1):
              print(f"{index}. {file}")
-             choice = int(input("Choose music to play (by index,write 0 to return): "))
-             if choice == 0:
-                    main_menu()
-             else:
-                choose_music(files_in_folder, choice)            
+        choice = int(input("Choose music to play (by index,write 0 to return): "))
+        if choice == 0:
+               main_menu()
+        else:
+           choose_music(files_in_folder, choice)            
              
     else:
         print(f"There are not only music files in the folder or they dont exist'{path}'")
@@ -363,8 +368,8 @@ def vibeflow_folder():
 
 def main_menu():
     system("cls")
-    Vibeflow = Fore.MAGENTA + "VibeFlow" + Fore.RESET
-    guide = Fore.YELLOW + "Guide" + Fore.RESET
+    Vibeflow = Fore.MAGENTA + "✮⋆˙VibeFlow✮⋆˙" + Fore.RESET
+    guide = Fore.YELLOW + "ִGuideִ" + Fore.RESET
     print(f"             Welcome to {Vibeflow} - A tiny music player")
     print(Fore.GREEN+f"                           Main Menu                     "+Fore.RESET)
     print(Fore.GREEN + "----------------------------------------------------------------"+Fore.RESET)
@@ -388,9 +393,9 @@ def main_menu():
         vibeflow_folder()
     elif choice == '3':
         system("cls")
-        print("Coming soon")
-        time.sleep(1)
-        main_menu()
+        print("You choosed  'Download Music from Vibeflow-site'")
+        
+        download_with_youtube()
     elif choice == '4':
         system("cls")
         print("You choosed  'Exit'")
@@ -413,7 +418,7 @@ def main_menu():
     
 def main():
     os.system("cls")
-    Vibeflow = Fore.MAGENTA + "VibeFlow" + Fore.RESET
+    Vibeflow = Fore.MAGENTA + "✮⋆˙VibeFlow✮⋆˙" + Fore.RESET
     print(f"Welcome to {Vibeflow} - A tiny music player")
     time.sleep(3)
     main_menu()
