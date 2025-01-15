@@ -115,6 +115,7 @@ def show_status(file_path):
 
  
 def show_status2(file_path):
+    global playing
     length = int(get_audio_length(file_path)) 
     current_pos = int(pygame.mixer.music.get_pos() / 1000)  
     volume = pygame.mixer.music.get_volume()  
@@ -126,11 +127,13 @@ def show_status2(file_path):
     print(f"Played: {current_pos} sec")
     print("Not played: ", length - current_pos)
     if current_pos == length:
+        playing = False
         print("Music has ended")
         time.sleep(1)
-        vibeflow_folder() 
+        vibeflow_folder()
           
 def choose_music(files, index):
+    global playing
     try:
         current_directory = os.getcwd()
         music_directory = os.path.join(current_directory, "music")
@@ -146,7 +149,7 @@ def choose_music(files, index):
         
         playing = True
         while playing:
-            show_status2(file_to_play)
+            show_status(file_to_play)
             time.sleep(1)
             os.system("cls") 
     except IndexError:
@@ -229,8 +232,7 @@ def download_with_youtube():
     time.sleep(1)
     os.system("cls" if os.name == "nt" else "clear")
     
-    # Загружаем API-ключ из config.json
-    config_file = "config.json"
+    config_file = "settings.json"
     api = load_api_key(config_file)
     if not api:
         print("API key not found. Please check your configuration file.")
